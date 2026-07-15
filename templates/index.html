@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alexandria — Library AI Assistant</title>
+
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+  <!-- App Stylesheet -->
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════════════════════ NAVBAR ═══ -->
+<nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+  <div class="container-fluid px-4">
+
+    <!-- Brand -->
+    <a class="navbar-brand d-flex align-items-center gap-2" href="#">
+      <span class="brand-icon"><i class="bi bi-journal-bookmark-fill"></i></span>
+      <span class="brand-name">Alexandria</span>
+      <span class="brand-badge">AI</span>
+    </a>
+
+    <!-- Mobile toggler -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav links -->
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto align-items-lg-center gap-1">
+        <li class="nav-item"><a class="nav-link nav-pill active" href="#" data-section="chat"><i class="bi bi-chat-dots me-1"></i>Chat</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-section="dashboard"><i class="bi bi-grid me-1"></i>Dashboard</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-section="search"><i class="bi bi-search me-1"></i>Search</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-section="history"><i class="bi bi-clock-history me-1"></i>History</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-section="favorites"><i class="bi bi-heart me-1"></i>Favorites</a></li>
+        <li class="nav-item"><a class="nav-link nav-pill" href="#" data-section="resources"><i class="bi bi-mortarboard me-1"></i>Resources</a></li>
+        <li class="nav-item ms-lg-2">
+          <button class="btn btn-icon" id="themeToggle" title="Toggle dark mode">
+            <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+          </button>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════════════════════ HERO ════ -->
+<div id="heroSection" class="hero-section">
+  <div class="hero-bg-pattern"></div>
+  <div class="container py-5 text-center position-relative">
+    <div class="hero-badge mb-3">Powered by IBM Watsonx.ai · IBM Granite</div>
+    <h1 class="hero-title mb-3">Meet <span class="text-accent">Alexandria</span></h1>
+    <p class="hero-subtitle mb-4">Your AI-powered library companion. Discover books, build reading plans,<br class="d-none d-md-block"> and unlock the joy of learning.</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap">
+      <button class="btn btn-primary btn-lg px-4" onclick="showSection('chat')"><i class="bi bi-chat-dots me-2"></i>Start Chatting</button>
+      <button class="btn btn-outline-primary btn-lg px-4" onclick="showSection('dashboard')"><i class="bi bi-grid me-2"></i>Browse Books</button>
+    </div>
+    <!-- AI status indicator -->
+    <div class="ai-status mt-4" id="aiStatus">
+      <span class="status-dot" id="statusDot"></span>
+      <span id="statusText">Checking AI connection…</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ MAIN CONTENT ═ -->
+<main class="container-fluid px-3 px-md-4 pb-5" id="mainContent">
+
+  <!-- ─────────────────────────────────── CHAT SECTION ─────────────────── -->
+  <section id="section-chat" class="app-section">
+    <div class="section-header"><i class="bi bi-chat-dots-fill me-2"></i>AI Chat Assistant</div>
+
+    <div class="chat-layout">
+      <!-- Chat window -->
+      <div class="chat-card">
+        <div class="chat-messages" id="chatMessages">
+          <!-- Welcome message injected by JS -->
+        </div>
+
+        <!-- Typing indicator -->
+        <div class="typing-indicator d-none" id="typingIndicator">
+          <span></span><span></span><span></span>
+          <span class="ms-2 text-muted small">Alexandria is thinking…</span>
+        </div>
+
+        <!-- Input bar -->
+        <div class="chat-input-bar">
+          <div class="input-group">
+            <textarea id="chatInput" class="form-control chat-textarea" rows="1"
+              placeholder="Ask about books, get recommendations, or request a reading plan…"></textarea>
+            <button class="btn btn-send" id="sendBtn" onclick="sendMessage()">
+              <i class="bi bi-send-fill"></i>
+            </button>
+          </div>
+          <div class="quick-chips mt-2" id="quickChips"></div>
+        </div>
+      </div>
+
+      <!-- Reading Plan panel -->
+      <div class="side-panel">
+        <div class="side-panel-card">
+          <h6 class="side-panel-title"><i class="bi bi-calendar3 me-2"></i>Generate Reading Plan</h6>
+          <div class="mb-2">
+            <input type="text" class="form-control form-control-sm" id="planGoal" placeholder="Your learning goal (e.g. 'learn Python')" />
+          </div>
+          <div class="row g-2 mb-2">
+            <div class="col-6">
+              <select class="form-select form-select-sm" id="planLevel">
+                <option value="beginner">Beginner</option>
+                <option value="intermediate">Intermediate</option>
+                <option value="advanced">Advanced</option>
+              </select>
+            </div>
+            <div class="col-6">
+              <select class="form-select form-select-sm" id="planDuration">
+                <option value="2 weeks">2 Weeks</option>
+                <option value="4 weeks" selected>4 Weeks</option>
+                <option value="8 weeks">8 Weeks</option>
+                <option value="3 months">3 Months</option>
+              </select>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-sm w-100" onclick="generatePlan()">
+            <i class="bi bi-magic me-1"></i>Generate Plan
+          </button>
+          <div id="planOutput" class="plan-output mt-3 d-none"></div>
+        </div>
+
+        <div class="side-panel-card mt-3">
+          <h6 class="side-panel-title"><i class="bi bi-star-fill me-2"></i>Quick Recommendations</h6>
+          <div class="mb-2">
+            <input type="text" class="form-control form-control-sm" id="recInterests" placeholder="Your interests (e.g. 'machine learning')" />
+          </div>
+          <select class="form-select form-select-sm mb-2" id="recLevel">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate" selected>Intermediate</option>
+            <option value="advanced">Advanced</option>
+          </select>
+          <button class="btn btn-secondary btn-sm w-100" onclick="getRecommendations()">
+            <i class="bi bi-book me-1"></i>Get Recommendations
+          </button>
+          <div id="recOutput" class="plan-output mt-3 d-none"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────── DASHBOARD SECTION ───────────────── -->
+  <section id="section-dashboard" class="app-section d-none">
+    <div class="section-header"><i class="bi bi-grid-fill me-2"></i>Book Dashboard</div>
+
+    <!-- Stats row -->
+    <div class="row g-3 mb-4" id="statsRow">
+      <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon bg-primary"><i class="bi bi-book-fill"></i></div><div><div class="stat-num" id="statBooks">6</div><div class="stat-label">Featured Books</div></div></div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon bg-success"><i class="bi bi-check-circle-fill"></i></div><div><div class="stat-num" id="statRead">0</div><div class="stat-label">Books Read</div></div></div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon bg-warning"><i class="bi bi-heart-fill"></i></div><div><div class="stat-num" id="statFavs">0</div><div class="stat-label">Favorites</div></div></div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="stat-card"><div class="stat-icon bg-info"><i class="bi bi-mortarboard-fill"></i></div><div><div class="stat-num" id="statResources">8</div><div class="stat-label">Resources</div></div></div>
+      </div>
+    </div>
+
+    <!-- Filter bar -->
+    <div class="filter-bar mb-4">
+      <button class="filter-btn active" data-genre="All">All</button>
+      <button class="filter-btn" data-genre="Programming">Programming</button>
+      <button class="filter-btn" data-genre="Interview Prep">Interview Prep</button>
+      <button class="filter-btn" data-genre="Computer Science">CS</button>
+      <button class="filter-btn" data-genre="System Design">System Design</button>
+    </div>
+
+    <!-- Book grid -->
+    <div class="row g-3" id="bookGrid"></div>
+  </section>
+
+  <!-- ──────────────────────────────── SEARCH SECTION ──────────────────── -->
+  <section id="section-search" class="app-section d-none">
+    <div class="section-header"><i class="bi bi-search me-2"></i>Book Search</div>
+
+    <div class="search-hero mb-4">
+      <div class="search-box-wrap">
+        <i class="bi bi-search search-icon-inner"></i>
+        <input type="text" class="form-control search-main-input" id="mainSearchInput"
+          placeholder="Search for books, authors, topics, or genres…" />
+        <button class="btn btn-primary search-btn" onclick="performSearch()">Search</button>
+      </div>
+      <div class="search-chips mt-3">
+        <span class="chip" onclick="quickSearch('Python programming')">Python</span>
+        <span class="chip" onclick="quickSearch('machine learning books')">Machine Learning</span>
+        <span class="chip" onclick="quickSearch('interview preparation')">Interview Prep</span>
+        <span class="chip" onclick="quickSearch('system design')">System Design</span>
+        <span class="chip" onclick="quickSearch('javascript web development')">JavaScript</span>
+        <span class="chip" onclick="quickSearch('data structures algorithms')">DSA</span>
+      </div>
+    </div>
+
+    <div id="searchLoading" class="text-center py-5 d-none">
+      <div class="spinner-border text-primary mb-3"></div>
+      <p class="text-muted">Alexandria is searching the library…</p>
+    </div>
+    <div id="searchResults" class="search-results-box d-none"></div>
+    <div id="searchEmpty" class="empty-state d-none">
+      <i class="bi bi-search"></i>
+      <p>Enter a search query above to discover books</p>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────── HISTORY SECTION ─────────────────── -->
+  <section id="section-history" class="app-section d-none">
+    <div class="section-header d-flex justify-content-between align-items-center">
+      <span><i class="bi bi-clock-history me-2"></i>Reading History</span>
+      <button class="btn btn-sm btn-outline-danger" onclick="clearHistory()"><i class="bi bi-trash me-1"></i>Clear All</button>
+    </div>
+    <div id="historyList" class="history-list"></div>
+    <div id="historyEmpty" class="empty-state d-none">
+      <i class="bi bi-clock"></i>
+      <p>Books you mark as read will appear here</p>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────── FAVORITES SECTION ───────────────── -->
+  <section id="section-favorites" class="app-section d-none">
+    <div class="section-header"><i class="bi bi-heart-fill me-2"></i>Favorite Books</div>
+    <div class="row g-3" id="favoritesGrid"></div>
+    <div id="favoritesEmpty" class="empty-state d-none">
+      <i class="bi bi-heart"></i>
+      <p>Click the heart icon on any book to save it here</p>
+    </div>
+  </section>
+
+  <!-- ──────────────────────────────── RESOURCES SECTION ───────────────── -->
+  <section id="section-resources" class="app-section d-none">
+    <div class="section-header"><i class="bi bi-mortarboard-fill me-2"></i>Learning Resources</div>
+    <div class="row g-3" id="resourcesGrid"></div>
+  </section>
+
+</main>
+
+<!-- ═══════════════════════════════════════════════════════════ TOAST ════ -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:9999">
+  <div id="appToast" class="toast align-items-center border-0" role="alert">
+    <div class="d-flex">
+      <div class="toast-body" id="toastBody"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Book Detail Modal -->
+<div class="modal fade" id="bookModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="bookModalTitle"></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body" id="bookModalBody"></div>
+      <div class="modal-footer border-0">
+        <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+        <button class="btn btn-primary" id="bookModalChat" onclick="askAboutBook()">
+          <i class="bi bi-chat-dots me-1"></i>Ask Alexandria
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
