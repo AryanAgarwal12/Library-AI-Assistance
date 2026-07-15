@@ -4,6 +4,10 @@ An AI-powered library assistant web application built with **Python Flask** and 
 
 ---
 
+## 🌐 Live Demo
+
+**Live Website:** https://library-ai-assistance.onrender.com
+
 ## ✨ Features
 
 | Feature | Description |
