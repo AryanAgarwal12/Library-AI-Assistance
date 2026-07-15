@@ -453,7 +453,7 @@ def _extract_chat_text(result) -> str:
 # ─────────────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
-    port = int(os.getenv("FLASK_PORT", 5000))
+    port = int(os.environ.get("PORT", os.getenv("FLASK_PORT", 5000)))
     debug = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "yes")
     logger.info("Starting Library AI Assistant on http://127.0.0.1:%d", port)
     app.run(host="0.0.0.0", port=port, debug=debug)
